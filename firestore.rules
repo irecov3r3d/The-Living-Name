@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation Helpers
+    function isValidTracker(data) {
+      return data.ownerId == request.auth.uid
+        && data.updatedAt == request.time
+        && (data.notes == null || (data.notes is string && data.notes.size() <= 5000))
+        && (data.m365Date == null || data.m365Date is string)
+        && (data.googleDate == null || data.googleDate is string)
+        && (data.modules is map)
+        && (data.queue is list && data.queue.size() <= 100);
+    }
+
+    // Collection Rules
+    match /trackers/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidTracker(incoming());
+      allow update: if isOwner(userId) && isValidTracker(incoming())
+                    && incoming().ownerId == userId; // Owner cannot change
+      allow delete: if isOwner(userId);
+    }
+  }
+}

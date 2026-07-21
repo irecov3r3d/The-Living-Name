@@ -1,0 +1,6 @@
+{
+  "name": "The Living Name",
+  "description": "Production tracker for 'The Living Name' project, focusing on root to crown modules, Enochian, and Metatron's Cube. Features trial countdowns, module checklists, and priority queue.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

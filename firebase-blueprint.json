@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "Tracker": {
+      "title": "Tracker",
+      "description": "Production tracker state for a user",
+      "type": "object",
+      "properties": {
+        "m365Date": {
+          "type": "string",
+          "description": "Target date for Microsoft 365 Copilot Pro expiry"
+        },
+        "googleDate": {
+          "type": "string",
+          "description": "Target date for Google AI Pro expiry"
+        },
+        "modules": {
+          "type": "object",
+          "description": "Map of module IDs to their completion status"
+        },
+        "queue": {
+          "type": "array",
+          "description": "List of priority tasks"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Loose notes and thoughts"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "ownerId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "The UID of the owner"
+        }
+      },
+      "required": ["ownerId", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/trackers/{userId}": {
+      "schema": "Tracker",
+      "description": "User-specific tracker data"
+    }
+  }
+}
